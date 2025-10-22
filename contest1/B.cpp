@@ -4,6 +4,7 @@
 const int cModulo = 10000000 + 4321;
 const int cMultiplier1 = 123;
 const int cMultiplier2 = 45;
+const int cGroupSize = 5;
 
 int NextVal(int a_early, int a_early2) {
   return (1LL * a_early * cMultiplier1 + 1LL * a_early2 * cMultiplier2) %
@@ -16,48 +17,23 @@ void Swap(int& a, int& b) {
   b = temp;
 }
 
-int MedianOfFive(std::vector<int>& arr, int left) {
-  int a = arr[left];
-  int b = arr[left + 1];
-  int c = arr[left + 2];
-  int d = arr[left + 3];
-  int e = arr[left + 4];
-
-  if (a > b) {
-    Swap(a, b);
+int MedianOfGroup(std::vector<int>& arr, int left) {
+  int elements[cGroupSize];
+  for (int i = 0; i < cGroupSize; ++i) {
+    elements[i] = arr[left + i];
   }
-  if (c > d) {
-    Swap(c, d);
+  
+  for (int i = 0; i < cGroupSize - 1; ++i) {
+    for (int j = 0; j < cGroupSize - 1 - i; ++j) {
+      if (elements[j] > elements[j + 1]) {
+        Swap(elements[j], elements[j + 1]);
+      }
+    }
   }
-  if (a > c) {
-    Swap(a, c);
-    Swap(b, d);
-  }
-  if (b > e) {
-    Swap(b, e);
-  }
-  if (a > b) {
-    Swap(a, b);
-    Swap(c, e);
-  }
-  if (c > e) {
-    Swap(c, e);
-  }
-  if (b > c) {
-    Swap(b, c);
-    Swap(d, e);
-  }
-  if (c > d) {
-    Swap(c, d);
-  }
-  if (b > c) {
-    Swap(b, c);
-  }
-
-  return c;
+  return elements[cGroupSize / 2];
 }
 
-int MedianOfUpToFive(std::vector<int>& arr, int left, int right) {
+int MedianOfUpToGroupSize(std::vector<int>& arr, int left, int right) {
   int n = right - left + 1;
 
   if (n == 1) {
@@ -104,24 +80,24 @@ int MedianOfUpToFive(std::vector<int>& arr, int left, int right) {
     }
     return b;
   }
-  // n == 5
-  return MedianOfFive(arr, left);
+  // n == cGroupSize
+  return MedianOfGroup(arr, left);
 }
 
 int FindMedian(std::vector<int>& arr, int left, int right) {
   int n = right - left + 1;
 
-  if (n <= 5) {
-    return MedianOfUpToFive(arr, left, right);
+  if (n <= cGroupSize) {
+    return MedianOfUpToGroupSize(arr, left, right);
   }
 
   std::vector<int> medians;
-  for (int i = left; i <= right; i += 5) {
-    int group_end = i + 4;
+  for (int i = left; i <= right; i += cGroupSize) {
+    int group_end = i + cGroupSize - 1;
     if (group_end > right) {
       group_end = right;
     }
-    medians.push_back(MedianOfUpToFive(arr, i, group_end));
+    medians.push_back(MedianOfUpToGroupSize(arr, i, group_end));
   }
 
   return FindMedian(medians, 0, static_cast<int>(medians.size()) - 1);
