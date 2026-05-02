@@ -1,5 +1,6 @@
 #include <algorithm>
 #include <iostream>
+#include <tuple>
 #include <vector>
 
 struct Edge {
@@ -28,10 +29,16 @@ struct DSU {
     void Unite(int a, int b) {
         a = Find(a);
         b = Find(b);
-        if (a == b) return;
-        if (rank[a] < rank[b]) std::swap(a, b);
+        if (a == b) {
+            return;
+        }
+        if (rank[a] < rank[b]) {
+            std::swap(a, b);
+        }
         parent[b] = a;
-        if (rank[a] == rank[b]) ++rank[a];
+        if (rank[a] == rank[b]) {
+            ++rank[a];
+        }
     }
 };
 
@@ -39,12 +46,15 @@ int main() {
     std::ios::sync_with_stdio(false);
     std::cin.tie(nullptr);
 
-    int n, m;
+    int n;
+    int m;
     std::cin >> n >> m;
 
     std::vector<Edge> edges(m);
     for (int i = 0; i < m; ++i) {
-        int u, v, c;
+        int u;
+        int v;
+        int c;
         std::cin >> u >> v >> c;
         edges[i] = {c, u, v};
     }
@@ -56,12 +66,17 @@ int main() {
     long long total_weight = 0;
     int edges_used = 0;
 
-    for (const auto& e : edges) {
-        if (dsu.Find(e.vertex1) != dsu.Find(e.vertex2)) {
-            dsu.Unite(e.vertex1, e.vertex2);
-            total_weight += e.weight;
+    for (const auto& edge : edges) {
+        int c = edge.weight;
+        int u = edge.vertex1;
+        int v = edge.vertex2;
+        if (dsu.Find(u) != dsu.Find(v)) {
+            dsu.Unite(u, v);
+            total_weight += c;
             ++edges_used;
-            if (edges_used == n - 1) break;
+            if (edges_used == n - 1) {
+                break;
+            }
         }
     }
 
